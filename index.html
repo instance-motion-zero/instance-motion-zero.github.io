@@ -88,6 +88,19 @@
   <script src="./static/js/bulma-carousel.min.js"></script>
   <script src="./static/js/bulma-slider.min.js"></script>
   <script src="./static/js/index.js"></script>
+  <!-- KaTeX CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <!-- KaTeX JS -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <!-- 自动渲染行内公式 -->
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+      onload="renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},  // 块级公式
+          {left: '$', right: '$', display: false}    // 行内公式
+        ]
+      });">
+  </script>
 </head>
 <body>
 <section class="hero">
@@ -107,17 +120,17 @@
           <div class="is-size-5 publication-authors" id="div1">
             <b><font size="3">  
             <span class="author-block">
-              <a href="https://scholar.google.com/citations?user=6aHx1rgAAAAJ&hl=zh-TW">Yuyang Huang</a><sup>1</sup><sup>*</sup>,</span>
+              <a href="https://github.com/huangyuyang114">Yuyang Huang</a><sup>1</sup><sup>*</sup>,</span>
             <span class="author-block">
-              <a href="https://jaminfong.cn/">Yabo Chen</a><sup>1</sup><sup>*</sup>,</span>
+              <a href="https://scholar.google.com/citations?user=6aHx1rgAAAAJ&hl=zh-TW"">Yabo Chen</a><sup>1</sup><sup>*</sup>,</span>
             <span class="author-block">
-              <a href="https://github.com/huangyuyang114">Li Ding</a><sup>1</sup>,</span>
+              <a href="https://instance-motion-zero.github.io">Li Ding</a><sup>1</sup>,</span>
             <span class="author-block">
               <a href="https://sites.google.com/site/zxphistory/">Xiaopeng Zhang</a><sup>2</sup>,</span></br>
             <span class="author-block">
               <a href="https://scholar.google.com/citations?user=Xg8MhyAAAAAJ&hl=en">Wenrui Dai</a><sup>1</sup>,</span>
               <span class="author-block">
-                <a href="https://scholar.google.com/citations?user=bB16iN4AAAAJ&hl=en&oi=ao">Junni Zou</a></a><sup>1</sup>,</span>
+                <a href="https://scholar.google.com/citations?user=NKYkyqEAAAAJ&hl=zh-CN&oi=ao">Junni Zou</a></a><sup>1</sup>,</span>
             <span class="author-block">
               <a href="https://scholar.google.com/citations?user=bB16iN4AAAAJ&hl=en&oi=ao">Hongkai Xiong</a></a><sup>1</sup>,</span>
             <span class="author-block">
@@ -186,26 +199,27 @@
           </object>
         </p> -->
         <p align="center">
-          <image width="100%" src="image/nvs.png" class="img-responsive" alt="overview">
+          <image width="100%" src="image/teaser-imzero.png" class="img-responsive" alt="overview">
         </p>
         
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified" id="div1">
-          Synthesizing multi-view 3D from one single image is a significant and challenging task.
-          For this goal, Zero-1-to-3 methods aim to extend a 2D latent diffusion model to the 3D scope. These approaches generate the target-view image with a single-view source image and the camera pose as condition information. 
-          However, the one-to-one manner adopted in Zero-1-to-3 incurs challenges for building geometric and visual consistency across views, especially for complex objects. We propose a cascade generation framework constructed with two Zero-1-to-3 models, named Cascade-Zero123, to tackle this issue, which progressively extracts 3D information from the source image. Specifically, a self-prompting mechanism is designed to generate several nearby views at first. These views are then fed into the second-stage model along with the source image as generation conditions. With self-prompted multiple views as the supplementary information, our Cascade-Zero123 generates more highly consistent novel-view images than Zero-1-to-3.
-          The promotion is significant for various complex and challenging scenes, involving insects, humans, transparent objects, and stacked multiple objects .etc.
+          Controllability of video generation has been recently concerned in addition to the quality of generated videos. The main challenge to controllable video generation is to synthesize videos based on user-specified instance spatial locations and movement trajectories. However, existing methods suffer from a dilemma between the resource consumption, generation quality, and user controllability. As an efficient alternative to prohibitive training-based video generation, existing zero-shot video generation methods cannot generate high-quality and motion-consistent videos under the control of layouts and movement trajectories. In this paper, we propose a novel zero-shot method named IM-Zero that ameliorates instance-level motion controllable video generation with enhanced control accuracy, motion consistency, and richness of details to address this problem. Specifically, we first present a motion generation stage that extracts motion and textural guidance from keyframe candidates from pre-trained grounded text-to-image model to generate the desired coarse motion video. Subsequently, we develop a video refinement stage that injects the mo tion priors of pre-trained text-to-video models and detail priors of pre-trained text-to-image models into the latents of coarse motion videos to further enhance video motion consistency and richness of details. To our best knowledge, IM-Zero is the first to simultaneously achieve high quality video generation and allow to control both layouts and movement trajectories in a zero-shot manner. Extensive experiments demonstrate that IM-Zero outperforms existing methods in terms of video quality, inter-frame consistency, and the alignment of location and trajectory. Furthermore, compared with existing methods, IM-Zero enjoys extra advantages of versatility in video generation, including motion control of subparts within instances, finer control of specifying instance shapes via masks, and more dif ficult tasks of motion transfer for customizing fine-grained motion patterns through reference videos and high-quality text-to-video generation. 
         </div>
-        <h2 class="title is-3">Framework</h2>
+        <h2 class="title is-3">Motion Generation Stage</h2>
         <div class="content has-text-justified" id="div1">
-          The architecture of Cascade-Zero123. Cascade-Zero123 can be divided into two parts. The left part is Base-0123, which takes a
-            set of R and T values as input to generate corresponding multi-view images. These output images are concatenated with the input condition
-            image and its corresponding camera pose, forming a self-prompted input denoted as a set of c(xc, ∆R, ∆T ) for the right part Refiner-0123.
-            The corresponding camera pose transition for each condition image to the target image needs to be recalculated as shown in detailed camera
-            pose rotations. After each iteration of training, Base-0123 is updated through exponential moving average(EMA) using Refiner-0123.
+          The Motion Generation Stage consists of two parts: Keyframe Candidates Generation and Coarse Motion Video Generation. In the first part, we augment the user input to obtain $\mathbf{Layout}$, then generate keyframe candidates $\mathbf{Frame}$ with an inflated grounded T2I model. In the second part, we extract motion guidance and textural guidance from $\mathbf{Frame}$ to generate a coarse motion video. 
         </div>
         <p align="center">
-          <image width="100%" src="image/method.png" class="img-responsive" alt="overview">
+          <image width="100%" src="image/stage1.png" class="img-responsive" alt="overview">
+        </p>
+        <h2 class="title is-3">Video Refinement Stage</h2>
+        <div class="content has-text-justified" id="div1">
+          In Video Refinement Stage, we diffuse coarser motion video latents and perform motion injection and detail injection in the reverse process. In motion injection, we first obtain $z_{t-1}$ by $z_t$, then denoise $z_{t-1}$ for further $M$ steps using a T2V model to $\tilde{z}'_{t-1-M}$ and combine them. We visualize the motion injection effect using CoTracker~\cite{karaev2023cotracker}.
+          In detail injection,  we first transform $\tilde{z}_{t-1}$ from T2V noise distribution to T2I noise distribution, then denoise it for further $N$ steps with an inflated T2I model. The result is reversed to T2V noise distribution and combined with $\tilde{z}_{t-1}$. We visualize the detail injection effect using FFT analysis. 
+        </div>
+        <p align="center">
+          <image width="100%" src="image/stage2.png" class="img-responsive" alt="overview">
         </p>
       </div>
     </div>
@@ -223,84 +237,25 @@
     </div> -->
     <!--/ Paper video. -->
   </div>
+
 </section>
 <section class="section">
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3">Rectifying Structural Errors in the Zero-1-to-3</h2>          
-          <video poster="" id="structural" autoplay muted loop playsinline height="100%">
-            <source src="./video/video_demo1.mp4"
-                    type="video/mp4">
-          </video>
-          <video poster="" id="structural" autoplay muted loop playsinline height="100%">
-            <source src="./video/video_demo2.mp4"
-                    type="video/mp4">
-          </video>
-          <video poster="" id="structural" autoplay muted loop playsinline height="100%">
-            <source src="./video/video_demo3.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<section class="section">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Polishing the Backside Colors of Zero-1-to-3</h2>          
+        <h2 class="title is-3">Video Demo</h2>          
           <video poster="" id="back" autoplay muted loop playsinline height="100%">
-            <source src="./video/video_demo4.mp4"
+            <source src="./video/video_demo.mp4"
                     type="video/mp4">
           </video>
-          <video poster="" id="back" autoplay muted loop playsinline height="100%">
+          <!-- <video poster="" id="back" autoplay muted loop playsinline height="100%">
             <source src="./video/video_demo5.mp4"
                     type="video/mp4">
           </video>
           <video poster="" id="back" autoplay muted loop playsinline height="100%">
             <source src="./video/video_demo6.mp4"
                     type="video/mp4">
-          </video>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<section class="section">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Addressing the Problem that Transparent or High-brightness Objects are Learned as White Clouds.</h2>          
-          <video poster="" id="white" autoplay muted loop playsinline height="100%">
-            <source src="./video/video_demo7.mp4"
-                    type="video/mp4">
-          </video>
-          <video poster="" id="white" autoplay muted loop playsinline height="100%">
-            <source src="./video/video_demo8.mp4"
-                    type="video/mp4">
-          </video>
-          <video poster="" id="white" autoplay muted loop playsinline height="100%">
-            <source src="./video/video_demo9.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<section class="section">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Novel View Synthesis Comparision with Zero-1-to-3 and SyncDreamer</h2>          
-          <p align="center">
-          <image width="100%" src="image/nvs_cmp1.png" class="img-responsive" alt="overview">
-          </p>
-          <p align="center">
-          <image width="100%" src="image/nvs_cmp2.png" class="img-responsive" alt="overview">
-          </p>
+          </video> -->
         </div>
       </div>
     </div>
@@ -309,14 +264,14 @@
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">Citation</h2>
-    <pre><code>@inproceedings{chen2024cascadezero123,
-          author = {Yabo Chen, Jiemin Fang, Yuyang Huang, Taoran Yi, Xiaopeng Zhang, Lingxi Xie, Xinggang Wang, Wenrui Dai, Hongkai Xiong,and Qi Tian},
+    <pre><code>@inproceedings{huang2025imzero,
+          author = {Yuyang Huang, Yabo Chen, Li Ding, Xiaopeng Zhang, Wenrui Dai, Junni Zou, Hongkai Xiong, Qi Tian},
           title = {IM-Zero: Instance-level Motion Controllable Video Generation in a Zero-shot Manner},
           year = {2025},
           booktitle = {CVPR}}
    </code></pre>
     </div>
-    </section>
+</section>
 <footer class="footer">
   <div class="container">
     <div class="columns is-centered">
